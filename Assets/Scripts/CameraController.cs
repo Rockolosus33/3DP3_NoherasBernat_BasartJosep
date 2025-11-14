@@ -1,0 +1,43 @@
+﻿using TreeEditor;
+using UnityEngine;
+
+public class CameraController : MonoBehaviour
+{
+    public PlayerController m_Player;
+    float m_Yaw = 0.0f;
+    float m_Pitch = 0.0f;
+    public float m_YawSpeed = 360.0f;
+    public float m_PitchSpeed = 180.0f;
+    public float m_MinPitch = -60.0f;
+    public float m_MaxPitch = 80.0f;
+    public float m_MinDistance = 3.0f;
+    public float m_MaxDistance = 12.0f;
+
+
+    private void Start()
+    {
+        m_Yaw = transform.eulerAngles.y;
+    }
+
+
+
+    private void LateUpdate()
+    {
+        Vector3 l_LookAt = m_Player.m_LookAt.transform.position;
+        float l_Distance = Vector3.Distance(l_LookAt, transform.position);
+        float l_HorizontalAxis = Input.GetAxis("Mouse X");
+        float l_VerticalAxis = Input.GetAxis("Mouse Y");
+        m_Yaw += l_HorizontalAxis * m_YawSpeed * Time.deltaTime;
+        m_Pitch += l_VerticalAxis * m_PitchSpeed * Time.deltaTime;
+        m_Pitch = Mathf.Clamp(m_Pitch, m_MinPitch, m_MaxPitch);
+
+        float l_YawRadians = m_Yaw * Mathf.Deg2Rad;
+        float l_PicthRadians = m_Pitch * Mathf.Deg2Rad;
+
+        Vector3 l_Direction = new Vector3(Mathf.Cos(l_PicthRadians) * Mathf.Sin(l_YawRadians), Mathf.Sin(l_PicthRadians), Mathf.Cos(l_PicthRadians) * Mathf.Cos(l_YawRadians));
+        l_Distance = Mathf.Clamp(l_Distance, m_MinDistance, m_MaxDistance);
+        Vector3 l_DeiredPositions = l_LookAt - l_Direction * l_Distance;
+        transform.position = l_DeiredPositions;
+        transform.LookAt(l_LookAt);
+    }
+}
