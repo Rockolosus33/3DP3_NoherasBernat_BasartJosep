@@ -43,6 +43,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     }
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         m_LastPunchTime = m_MaxTimeToComboPunch;
         m_RightHandPunchCollider.SetActive(false);
         m_LeftHandPunchCollider.SetActive(false);
@@ -177,6 +178,22 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     }
 
     public void Step()
+    {
+
+    }
+    public void PunchSound1()
+    {
+
+    }
+    public void PunchSound3()
+    {
+
+    }
+    public void PunchSound2()
+    {
+
+    }
+    public void FinishPunch()
     {
 
     }

@@ -422,7 +422,7 @@ MonoBehaviour:
   m_WalkSpeed: 4
   m_RunSpeed: 8
   m_LookAt: {fileID: 82656417}
-  m_RotationLerpPct: 0.8
+  m_RotationLerpPct: 0.081
   m_DampTime: 0.2
   m_MaxTimeToComboPunch: 0.8
   m_RightHandPunchCollider: {fileID: 1029373999}
@@ -1199,7 +1199,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7730383466264150112, guid: 729025a49abe48b42bdda766c38e4c92, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.01
+      value: 21.46
       objectReference: {fileID: 0}
     - target: {fileID: 7730383466264150112, guid: 729025a49abe48b42bdda766c38e4c92, type: 3}
       propertyPath: m_LocalPosition.y
