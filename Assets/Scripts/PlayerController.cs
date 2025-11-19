@@ -1,6 +1,7 @@
 using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour , IRestartGameElement
 {
     public enum TPunchType
@@ -173,5 +174,10 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         transform.position = m_StartPosition;
         transform.rotation = m_StartRotation;
         m_CharacterController.enabled = true;
+    }
+
+    public void Step()
+    {
+
     }
 }
