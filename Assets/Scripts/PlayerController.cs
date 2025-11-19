@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 public class PlayerController : MonoBehaviour , IRestartGameElement
 {
@@ -155,6 +156,14 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         else if (PunchType == TPunchType.KICK)
         {
             m_KickPunchCollider.SetActive(Active);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Deadzone"))
+        {
+            RestartGame();
         }
     }
 

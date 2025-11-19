@@ -6,7 +6,15 @@ public class GameManager : MonoBehaviour
 {
     static GameManager m_GameManager;
     List<IRestartGameElement> m_RestartGameElement = new List<IRestartGameElement>();
+    public AudioClip m_Music;
 
+    private void Start()
+    {
+        AudioSource l_AudioSource = gameObject.AddComponent<AudioSource>();
+        l_AudioSource.clip = m_Music;
+        l_AudioSource.loop = true;
+        l_AudioSource.Play();
+    }
     private void Awake()
     {
         if(m_GameManager != null)
@@ -24,7 +32,7 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R)) ;
+        if (Input.GetKeyDown(KeyCode.R))
         {
             RestartGame();
         }
