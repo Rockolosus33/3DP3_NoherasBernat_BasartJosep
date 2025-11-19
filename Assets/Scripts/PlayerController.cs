@@ -1,11 +1,18 @@
 using System;
 using UnityEngine;
-
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour , IRestartGameElement
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public enum TPunchType
+    {
+        RIGHT_HAND=0,
+        LEFT_HAND,
+        KICK,
+    }
     CharacterController m_CharacterController;
     Animator m_Animator;
+
+    Vector3 m_StartPosition;
+    Quaternion m_StartRotation;
     public Camera m_camera;
     float m_RightSpeed;
     float m_ForwardSpeed;
@@ -14,11 +21,33 @@ public class PlayerController : MonoBehaviour
     float m_VerticalSpeed = 0.0f;
     public Transform m_LookAt;
     [Range(0.0f, 1.0f)] public float m_RotationLerpPct = 0.8f;
+    public float m_DampTime = 0.2f;
+
+    [Header("Punch")]
+    public float m_MaxTimeToComboPunch = 0.8f;
+    int m_CurrentPunchId;
+    float m_LastPunchTime;
+    public GameObject m_RightHandPunchCollider;
+    public GameObject m_LeftHandPunchCollider;
+    public GameObject m_KickPunchCollider;
+
+    [Header("Input")]
+    public int m_PunchMouseButton = 0;
 
     private void Awake()
     {
         m_CharacterController = GetComponent<CharacterController>();
         m_Animator = GetComponent<Animator>();
+    }
+    private void Start()
+    {
+        m_LastPunchTime = m_MaxTimeToComboPunch;
+        m_RightHandPunchCollider.SetActive(false);
+        m_LeftHandPunchCollider.SetActive(false);
+        m_KickPunchCollider.SetActive(false);
+        m_StartPosition = transform.position;
+        m_StartRotation = transform.rotation;
+        GameManager.GetGameManager().AddRestartGameElement(this);
     }
 
     void Update()
@@ -61,11 +90,11 @@ public class PlayerController : MonoBehaviour
         }
         if (l_Movement.sqrMagnitude == 0.0f)
         {
-            m_Animator.SetFloat("Speed", 0.0f);
+            m_Animator.SetFloat("Speed", 0.0f,m_DampTime,Time.deltaTime);
         }
         else
         {
-            m_Animator.SetFloat("Speed", l_SpeedAnimatorValue);
+            m_Animator.SetFloat("Speed", l_SpeedAnimatorValue,m_DampTime,Time.deltaTime);
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(l_Movement), m_RotationLerpPct);
         }
 
@@ -82,5 +111,58 @@ public class PlayerController : MonoBehaviour
             m_VerticalSpeed = 0.0f;
         }
 
+        UpdatePunch();
+    }
+    void UpdatePunch()
+    {
+        if (CanPunch() && Input.GetMouseButtonDown(m_PunchMouseButton))
+        {
+            Punch();
+        }
+    }
+
+    bool CanPunch()
+    {
+        return !m_Animator.IsInTransition(0) && m_Animator.GetCurrentAnimatorStateInfo(0).shortNameHash == Animator.StringToHash("Movement");
+    }
+    void Punch()
+    {
+        float l_DiffPunchTime = Time.time - m_LastPunchTime;
+        if (l_DiffPunchTime < m_MaxTimeToComboPunch)
+        {
+            m_CurrentPunchId = (m_CurrentPunchId + 1) % 3;
+        }
+        else
+        {
+            m_CurrentPunchId = 0;
+        }
+
+        m_LastPunchTime = Time.time;
+        m_Animator.SetTrigger("Punch");
+        m_Animator.SetInteger("Punch ID", m_CurrentPunchId);
+    }
+
+    public void SetActivePunch(TPunchType PunchType, bool Active)
+    {
+        if (PunchType == TPunchType.RIGHT_HAND)
+        {
+            m_RightHandPunchCollider.SetActive(Active);
+        }
+        else if (PunchType == TPunchType.LEFT_HAND)
+        {
+            m_LeftHandPunchCollider.SetActive(Active);
+        }
+        else if (PunchType == TPunchType.KICK)
+        {
+            m_KickPunchCollider.SetActive(Active);
+        }
+    }
+
+    public void RestartGame()
+    {
+        m_CharacterController.enabled = false;
+        transform.position = m_StartPosition;
+        transform.rotation = m_StartRotation;
+        m_CharacterController.enabled = true;
     }
 }

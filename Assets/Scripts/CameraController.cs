@@ -12,7 +12,8 @@ public class CameraController : MonoBehaviour
     public float m_MaxPitch = 80.0f;
     public float m_MinDistance = 3.0f;
     public float m_MaxDistance = 12.0f;
-
+    public LayerMask m_LayerMask;
+    public float m_OffsetDistance = 0.1f;
 
     private void Start()
     {
@@ -36,7 +37,13 @@ public class CameraController : MonoBehaviour
 
         Vector3 l_Direction = new Vector3(Mathf.Cos(l_PicthRadians) * Mathf.Sin(l_YawRadians), Mathf.Sin(l_PicthRadians), Mathf.Cos(l_PicthRadians) * Mathf.Cos(l_YawRadians));
         l_Distance = Mathf.Clamp(l_Distance, m_MinDistance, m_MaxDistance);
+
+        Ray l_Ray = new Ray(l_LookAt, -l_Direction);
         Vector3 l_DeiredPositions = l_LookAt - l_Direction * l_Distance;
+        if (Physics.Raycast(l_Ray, out RaycastHit l_RaycastHit, l_Distance ,m_LayerMask.value))
+        {
+            l_DeiredPositions = l_RaycastHit.point + l_Direction * m_OffsetDistance;
+        }
         transform.position = l_DeiredPositions;
         transform.LookAt(l_LookAt);
     }
