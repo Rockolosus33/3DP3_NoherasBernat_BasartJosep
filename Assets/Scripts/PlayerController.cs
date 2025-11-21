@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -33,9 +34,25 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     public GameObject m_LeftHandPunchCollider;
     public GameObject m_KickPunchCollider;
 
+    [Header("Jump")]
+    public float m_JumpSpeed = 4.0f;
+    public float m_KillJumpSpeed = 4.0f;
+    public float m_MaxAngleToKillGoomba = 30.0f;
+    public KeyCode m_JumpKeyCode = KeyCode.Space;
+
     [Header("Input")]
     public int m_PunchMouseButton = 0;
 
+    [Header("Elevator")]
+    public float m_MaxAngleToAttachElevator = 30.0f;
+    Collider m_ElevatorCollider;
+
+    [Header("Sound")]
+    public AudioSource m_RightFootAudioSource;
+    public AudioSource m_LeftFootAudioSource;
+
+    int m_Life = 8;
+    int m_Coins = 0;
     private void Awake()
     {
         m_CharacterController = GetComponent<CharacterController>();
@@ -101,11 +118,19 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(l_Movement), m_RotationLerpPct);
         }
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (CanJump())
+            {
+                Jump();
+            }
+        }
+
         l_Movement *= l_Speed * Time.deltaTime;
         m_VerticalSpeed += Physics.gravity.y * Time.deltaTime;
         l_Movement.y = m_VerticalSpeed * Time.deltaTime;
         CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_Movement);
-        if((l_CollisionFlags & CollisionFlags.CollidedBelow) != 0)
+        if ((l_CollisionFlags & CollisionFlags.CollidedBelow) != 0 && m_VerticalSpeed < 0.0f)
         {
             m_VerticalSpeed = 0.0f;
         }
@@ -116,6 +141,11 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
 
         UpdatePunch();
     }
+
+    private void LateUpdate()
+    {
+        UpdateElevator();
+    }
     void UpdatePunch()
     {
         if (CanPunch() && Input.GetMouseButtonDown(m_PunchMouseButton))
@@ -123,7 +153,14 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
             Punch();
         }
     }
-
+    bool CanJump()
+    {
+        return true;
+    }
+    void Jump()
+    {
+        m_VerticalSpeed = m_JumpSpeed;
+    }
     bool CanPunch()
     {
         return !m_Animator.IsInTransition(0) && m_Animator.GetCurrentAnimatorStateInfo(0).shortNameHash == Animator.StringToHash("Movement");
@@ -161,13 +198,6 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Deadzone"))
-        {
-            RestartGame();
-        }
-    }
 
     public void RestartGame()
     {
@@ -177,9 +207,22 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         m_CharacterController.enabled = true;
     }
 
-    public void Step()
+    public void Step(AnimationEvent _AnimationEvent)
     {
+        AudioSource l_CurrentAudioSource = null;
+        if(_AnimationEvent.stringParameter == "Left")
+        {
+            l_CurrentAudioSource = m_LeftFootAudioSource;
+        }
+        if (_AnimationEvent.stringParameter == "Right")
+        {
+            l_CurrentAudioSource = m_RightFootAudioSource;
 
+        }
+
+        AudioClip l_AudioClip = (AudioClip)_AnimationEvent.objectReferenceParameter;
+        l_CurrentAudioSource.clip = l_AudioClip;
+        l_CurrentAudioSource.Play();
     }
     public void PunchSound1()
     {
@@ -195,6 +238,99 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     }
     public void FinishPunch()
     {
+
+    }
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.collider.CompareTag("Goomba"))
+        {
+            GoombaController l_GoombaEnemy = hit.collider.GetComponent<GoombaController>();
+            if (CanKillWithFeet(hit))
+            {
+                l_GoombaEnemy.Kill();
+                JumpOverEnemy();
+                
+            }
+            Debug.DrawRay(hit.point, hit.normal, Color.magenta, 5.0f);
+        }
+    }
+    void JumpOverEnemy()
+    {
+        m_VerticalSpeed = m_KillJumpSpeed;
+    }
+    bool CanKillWithFeet(ControllerColliderHit hit)
+    {
+        float l_Dot = Vector3.Dot(hit.normal, Vector3.up);
+        return m_VerticalSpeed < 0.0f && l_Dot >Mathf.Cos(m_MaxAngleToKillGoomba* Mathf.Deg2Rad);
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Deadzone"))
+        {
+            RestartGame();
+        }
+
+        if (other.CompareTag("Elevator"))
+        {
+            if (CanAttachToElevator(other))
+            {
+                AttachToElevator(other);
+            }
+        }
+
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Elevator"))
+        {
+            DetachFromElevator();
+        }
+    }
+
+    bool CanAttachToElevator(Collider ElevatorCollider)
+    {
+        return Vector3.Dot(m_ElevatorCollider.transform.up, Vector3.up) > Mathf.Cos(m_MaxAngleToAttachElevator * Mathf.Deg2Rad);
+    }
+
+    void AttachToElevator(Collider ElevatorCollider)
+    {
+        transform.SetParent(ElevatorCollider.transform.parent);
+        m_ElevatorCollider = ElevatorCollider;
+    }
+
+    void DetachFromElevator()
+    {
+        transform.SetParent(null);
+        UpdateUpElevator();
+        m_ElevatorCollider = null;
+    }
+    void UpdateUpElevator()
+    {
+        Vector3 l_Direction = transform.forward;
+        l_Direction.y = 0.0f;
+        l_Direction.Normalize();
+        transform.rotation = Quaternion.LookRotation(l_Direction, Vector3.up);
+    }
+    void UpdateElevator()
+    {
+        if(m_ElevatorCollider != null)
+        {
+            UpdateUpElevator();
+        }
+    }
+
+    public void AddCoin()
+    {
+        ++m_Coins;
+        GameManager.GetGameManager().m_GameUI.SetCoins(m_Coins);
+        GameManager.GetGameManager().m_GameUI.ShowUI();
+
+    }
+    public void Hit()
+    {
+        --m_Coins;
+        GameManager.GetGameManager().m_GameUI.SetLifeBar(m_Life/8.0f);
+        GameManager.GetGameManager().m_GameUI.ShowUI();
 
     }
 }

@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
     static GameManager m_GameManager;
     List<IRestartGameElement> m_RestartGameElement = new List<IRestartGameElement>();
     public AudioClip m_Music;
+    public GameUI m_GameUI;
+    public PlayerController m_Player;
 
     private void Start()
     {
