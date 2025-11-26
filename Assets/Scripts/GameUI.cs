@@ -5,7 +5,6 @@ public class GameUI : MonoBehaviour
 {
     public Text m_CoinsText;
     public Image m_LifeBar;
-    Animation m_Animaton;
 
     [Header("Animation")]
     public Animation m_Animation;
@@ -17,6 +16,7 @@ public class GameUI : MonoBehaviour
 
     private void Start()
     {
+        m_Animation = GetComponent<Animation>();
         SetCoins(0);
         SetLifeBar(1.0f);
         m_Animation.Play(StayOutAnimation.name);

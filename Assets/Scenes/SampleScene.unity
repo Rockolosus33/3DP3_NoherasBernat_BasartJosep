@@ -565,8 +565,8 @@ MonoBehaviour:
   m_JumpKeyCode: 32
   m_PunchMouseButton: 0
   m_MaxAngleToAttachElevator: 30
-  m_RightFootAudioSource: {fileID: 0}
-  m_LeftFootAudioSource: {fileID: 0}
+  m_RightFootAudioSource: {fileID: 182292767}
+  m_LeftFootAudioSource: {fileID: 1139374300}
 --- !u!143 &267775953
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1195,7 +1195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_CoinsText: {fileID: 727510194}
-  m_LifeBar: {fileID: 545634574}
+  m_LifeBar: {fileID: 1152223662}
   m_Animation: {fileID: 653417050}
   InAnimation: {fileID: 7400000, guid: 95546363d694a564b9d6ddee02eaed5b, type: 2}
   OutAnimation: {fileID: 7400000, guid: 75444b4dd93351b4b9e75c20c05cb5a5, type: 2}
@@ -1211,14 +1211,14 @@ Animation:
   m_GameObject: {fileID: 653417043}
   m_Enabled: 1
   serializedVersion: 4
-  m_Animation: {fileID: 7400000, guid: 93b9aa7d0ab2c6549b8de2de4a194ef9, type: 2}
+  m_Animation: {fileID: 7400000, guid: b0d6d59ac5bad6846a25eae54a22b9e8, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: b0d6d59ac5bad6846a25eae54a22b9e8, type: 2}
   - {fileID: 7400000, guid: 93b9aa7d0ab2c6549b8de2de4a194ef9, type: 2}
   - {fileID: 7400000, guid: 95546363d694a564b9d6ddee02eaed5b, type: 2}
   - {fileID: 7400000, guid: 75444b4dd93351b4b9e75c20c05cb5a5, type: 2}
   m_WrapMode: 0
-  m_PlayAutomatically: 1
+  m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 0
