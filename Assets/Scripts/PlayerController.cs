@@ -139,7 +139,16 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
             m_VerticalSpeed = 0.0f;
         }
 
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            AddCoin();
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            AddCoin();
+        }
         UpdatePunch();
+
     }
 
     private void LateUpdate()
