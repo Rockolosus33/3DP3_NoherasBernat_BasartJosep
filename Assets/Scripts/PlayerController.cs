@@ -145,7 +145,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         }
         if (Input.GetKeyDown(KeyCode.L))
         {
-            AddCoin();
+            Hit();
         }
         UpdatePunch();
 

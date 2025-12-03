@@ -12,7 +12,7 @@ public class GameUI : MonoBehaviour
     public AnimationClip OutAnimation;
     public AnimationClip StayInAnimation;
     public AnimationClip StayOutAnimation;
-    public float m_ShowUIWaitTime;
+    public float m_ShowUIWaitTime = 2.0f;
 
     private void Start()
     {
