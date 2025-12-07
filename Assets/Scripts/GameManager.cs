@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
+
         foreach (IRestartGameElement l_RestartGameElement in m_RestartGameElement)
             l_RestartGameElement.RestartGame();
     }

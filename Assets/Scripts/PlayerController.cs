@@ -53,10 +53,13 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     public AudioSource m_RightFootAudioSource;
     public AudioSource m_LeftFootAudioSource;
 
-    int m_Life = 8;
-    int m_Coins = 0;
+    public int m_Life = 8;
+    public int m_GeneralLifes = 3;
+    public int m_Coins = 0;
     float m_JumpTimer;
     int m_JumpID;
+    float m_InitalSpeed;
+    bool CanWallJump;
     private void Awake()
     {
         m_CharacterController = GetComponent<CharacterController>();
@@ -64,6 +67,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     }
     private void Start()
     {
+        m_InitalSpeed = m_RunSpeed;
         Cursor.lockState = CursorLockMode.Locked;
         m_LastPunchTime = m_MaxTimeToComboPunch;
         m_RightHandPunchCollider.SetActive(false);
@@ -74,6 +78,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         GameManager.GetGameManager().AddRestartGameElement(this);
         GameManager.GetGameManager().m_GameUI.ShowUI();
         m_JumpsPossible = m_MaxJumps;
+        GameManager.GetGameManager().m_GameUI.SetLifeText(m_GeneralLifes);
     }
 
     void Update()
@@ -141,6 +146,8 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
             m_VerticalSpeed = 0.0f;
             m_JumpsPossible = m_MaxJumps;
             m_JumpTimer += Time.deltaTime;
+            m_RunSpeed = m_InitalSpeed;
+            CanWallJump = true;
         }
         else if ((l_CollisionFlags & CollisionFlags.CollidedAbove) != 0 && m_VerticalSpeed > 0.0f)
         {
@@ -148,7 +155,11 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         }
         else if ((l_CollisionFlags & CollisionFlags.CollidedSides) != 0 && m_VerticalSpeed != 0.0f)
         {
-            m_JumpsPossible = m_MaxJumps;
+            if (CanWallJump)
+            {
+                m_JumpsPossible = m_MaxJumps;
+                CanWallJump = false;
+            }
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -210,24 +221,30 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
             m_JumpBoost = 3.0f;
 
         }
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift))
         {
-            m_JumpBoost = m_JumpBoost * 5f;
+            m_Animator.Play("Long_Jump");
+            m_JumpBoost = 4.0f;
+            m_RunSpeed = m_RunSpeed * 1.4f;
         }
         m_VerticalSpeed = m_JumpSpeed + m_JumpBoost;
         --m_JumpsPossible;
     }
-    public void Jump1()
+    public void Jump1(AnimationEvent Sonido)
     {
-        
+        GameManager.GetGameManager().l_AudioSource.PlayOneShot((AudioClip)Sonido.objectReferenceParameter);
     }
-    public void Jump2()
+    public void Jump2(AnimationEvent Sonido)
     {
-
+        GameManager.GetGameManager().l_AudioSource.PlayOneShot((AudioClip)Sonido.objectReferenceParameter);
     }
-    public void Jump3()
+    public void Jump3(AnimationEvent Sonido)
     {
-
+        GameManager.GetGameManager().l_AudioSource.PlayOneShot((AudioClip)Sonido.objectReferenceParameter);
+    }
+    public void LongJumpSound(AnimationEvent Sonido)
+    {
+        GameManager.GetGameManager().l_AudioSource.PlayOneShot((AudioClip)Sonido.objectReferenceParameter);
     }
     bool CanPunch()
     {
@@ -276,6 +293,8 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         int m_Life = 8;
         int m_Coins = 0;
         GameManager.GetGameManager().m_GameUI.SetLifeBar(m_Life / 8.0f);
+        --m_GeneralLifes;
+        GameManager.GetGameManager().m_GameUI.SetLifeText(m_GeneralLifes);
     }
 
     public void Step(AnimationEvent _AnimationEvent)
@@ -295,17 +314,17 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         l_CurrentAudioSource.clip = l_AudioClip;
         l_CurrentAudioSource.Play();
     }
-    public void PunchSound1()
+    public void PunchSound1(AnimationEvent Sonido)
     {
-
+        GameManager.GetGameManager().l_AudioSource.PlayOneShot((AudioClip)Sonido.objectReferenceParameter);
     }
-    public void PunchSound3()
+    public void PunchSound3(AnimationEvent Sonido)
     {
-
+        GameManager.GetGameManager().l_AudioSource.PlayOneShot((AudioClip)Sonido.objectReferenceParameter);
     }
-    public void PunchSound2()
+    public void PunchSound2(AnimationEvent Sonido)
     {
-
+        GameManager.GetGameManager().l_AudioSource.PlayOneShot((AudioClip)Sonido.objectReferenceParameter);
     }
     public void FinishPunch()
     {
@@ -342,7 +361,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     {
         if (other.CompareTag("Deadzone"))
         {
-            RestartGame();
+            MenuController.Instance.EnableGameOverCanvas();
         }
 
         if (other.CompareTag("Elevator"))
@@ -404,7 +423,10 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     }
     public void AddLife()
     {
-        ++m_Life;
+        if(m_Life < 8)
+        {
+            ++m_Life;
+        }
         GameManager.GetGameManager().m_GameUI.SetLifeBar(m_Life / 8.0f);
         GameManager.GetGameManager().m_GameUI.ShowUI();
 
@@ -416,7 +438,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         GameManager.GetGameManager().m_GameUI.ShowUI();
         if (m_Life == 0)
         {
-            GameManager.GetGameManager().RestartGame();
+            MenuController.Instance.EnableGameOverCanvas();
         }
     }
 }

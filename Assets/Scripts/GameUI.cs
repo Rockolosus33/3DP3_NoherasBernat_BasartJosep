@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class GameUI : MonoBehaviour
 {
     public Text m_CoinsText;
+    public Text m_GeneralLifesText;
     public Image m_LifeBar;
 
     [Header("Animation")]
@@ -31,6 +32,10 @@ public class GameUI : MonoBehaviour
     public void SetLifeBar(float lifeNormalized)
     {
         m_LifeBar.fillAmount = lifeNormalized;
+    }
+    public void SetLifeText(float lifes)
+    {
+        m_GeneralLifesText.text = lifes.ToString();
     }
 
     public void ShowUI()

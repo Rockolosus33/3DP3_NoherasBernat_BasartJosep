@@ -29,7 +29,7 @@ public class GoombaController : MonoBehaviour, IRestartGameElement
 
     float Counter = 0.0f;
     bool m_IsTouchingPlayer = false;
-
+    public AudioClip m_Audio;
     private void Awake()
     {
         m_Agent = GetComponent<NavMeshAgent>();
@@ -122,8 +122,8 @@ public class GoombaController : MonoBehaviour, IRestartGameElement
 
     bool CanSeePlayer()
     {
-        float dist = Vector3.Distance(transform.position, m_Player.transform.position);
-        return dist <= m_ViewRadius;
+        float distance = Vector3.Distance(transform.position, m_Player.transform.position);
+        return distance <= m_ViewRadius;
     }
 
 
@@ -155,6 +155,7 @@ public class GoombaController : MonoBehaviour, IRestartGameElement
         m_State = State.DEAD;
         m_Agent.enabled = false;
         gameObject.SetActive(false);
+        GameManager.GetGameManager().l_AudioSource.PlayOneShot(m_Audio);
     }
 
     public void RestartGame()
@@ -172,11 +173,5 @@ public class GoombaController : MonoBehaviour, IRestartGameElement
         m_Agent.enabled = true;
 
         MoveToNextPoint();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, m_ViewRadius);
     }
 }
