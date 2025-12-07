@@ -23,7 +23,6 @@ public class StarBehaviour : MonoBehaviour , IRestartGameElement
         if (other.gameObject.CompareTag("Player"))
         {
             GameManager.GetGameManager().m_Player.AddLife();
-            //m_AudioSource.Play();
             GameManager.GetGameManager().l_AudioSource.PlayOneShot(m_Audio);
             gameObject.SetActive(false);
         }

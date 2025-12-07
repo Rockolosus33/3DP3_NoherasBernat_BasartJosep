@@ -24,20 +24,4 @@ public class PunchBehaviour : StateMachineBehaviour
         m_PlayerController.SetActivePunch(m_PunchType, false);
     }
 
-    public void PunchSound1()
-    {
-
-    }
-    public void PunchSound3()
-    {
-
-    }
-    public void PunchSound2()
-    {
-
-    }
-    public void FinishPunch()
-    {
-
-    }
 }
