@@ -324,6 +324,10 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
             }
             Debug.DrawRay(hit.point, hit.normal, Color.magenta, 5.0f);
         }
+        if (hit.collider.CompareTag("Bridge"))
+        {
+            hit.rigidbody.AddForceAtPosition(-hit.normal * 5.0f, hit.point);
+        }
     }
     void JumpOverEnemy()
     {
