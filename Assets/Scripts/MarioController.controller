@@ -264,18 +264,18 @@ BlendTree:
     m_Motion: {fileID: 7400004, guid: 2c49a169fa02b2545921fcc829011ecb, type: 3}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
-    m_TimeScale: 1
-    m_CycleOffset: 0
+    m_TimeScale: 0.01
+    m_CycleOffset: 0.5
     m_DirectBlendParameter: Speed
-    m_Mirror: 0
+    m_Mirror: 1
   - serializedVersion: 2
     m_Motion: {fileID: 7400070, guid: 2c49a169fa02b2545921fcc829011ecb, type: 3}
-    m_Threshold: 0.5
+    m_Threshold: 0.15
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
-    m_CycleOffset: 0
+    m_CycleOffset: 0.5
     m_DirectBlendParameter: Speed
-    m_Mirror: 0
+    m_Mirror: 1
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 2c49a169fa02b2545921fcc829011ecb, type: 3}
     m_Threshold: 1
@@ -288,7 +288,7 @@ BlendTree:
   m_BlendParameterY: Speed
   m_MinThreshold: 0
   m_MaxThreshold: 1
-  m_UseAutomaticThresholds: 1
+  m_UseAutomaticThresholds: 0
   m_NormalizedBlendValues: 0
   m_BlendType: 0
 --- !u!91 &9100000
@@ -475,10 +475,10 @@ AnimatorState:
   m_TimeParameterActive: 0
   m_Motion: {fileID: -1401290538918534784}
   m_Tag: 
-  m_SpeedParameter: 
+  m_SpeedParameter: Speed
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
-  m_TimeParameter: 
+  m_TimeParameter: Speed
 --- !u!114 &4883684033666899659
 MonoBehaviour:
   m_ObjectHideFlags: 1

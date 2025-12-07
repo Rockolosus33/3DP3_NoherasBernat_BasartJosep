@@ -39,6 +39,8 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     public float m_KillJumpSpeed = 4.0f;
     public float m_MaxAngleToKillGoomba = 30.0f;
     public KeyCode m_JumpKeyCode = KeyCode.Space;
+    int m_JumpsPossible;
+    int m_MaxJumps = 2;
 
     [Header("Input")]
     public int m_PunchMouseButton = 0;
@@ -68,6 +70,8 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         m_StartPosition = transform.position;
         m_StartRotation = transform.rotation;
         GameManager.GetGameManager().AddRestartGameElement(this);
+        GameManager.GetGameManager().m_GameUI.ShowUI();
+        m_JumpsPossible = m_MaxJumps;
     }
 
     void Update()
@@ -133,6 +137,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         if ((l_CollisionFlags & CollisionFlags.CollidedBelow) != 0 && m_VerticalSpeed < 0.0f)
         {
             m_VerticalSpeed = 0.0f;
+            m_JumpsPossible = m_MaxJumps;
         }
         else if ((l_CollisionFlags & CollisionFlags.CollidedAbove) != 0 && m_VerticalSpeed > 0.0f)
         {
@@ -164,11 +169,16 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     }
     bool CanJump()
     {
-        return true;
+        if (m_JumpsPossible >= 0)
+        {
+            return true;
+        }
+        return false;
     }
     void Jump()
     {
         m_VerticalSpeed = m_JumpSpeed;
+        --m_JumpsPossible;
     }
     bool CanPunch()
     {
@@ -214,6 +224,8 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         transform.position = m_StartPosition;
         transform.rotation = m_StartRotation;
         m_CharacterController.enabled = true;
+        int m_Life = 8;
+        int m_Coins = 0;
     }
 
     public void Step(AnimationEvent _AnimationEvent)
@@ -335,11 +347,21 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         GameManager.GetGameManager().m_GameUI.ShowUI();
 
     }
-    public void Hit()
+    public void AddLife()
     {
-        --m_Coins;
-        GameManager.GetGameManager().m_GameUI.SetLifeBar(m_Life/8.0f);
+        ++m_Life;
+        GameManager.GetGameManager().m_GameUI.SetLifeBar(m_Life / 8.0f);
         GameManager.GetGameManager().m_GameUI.ShowUI();
 
+    }
+    public void Hit()
+    {
+        --m_Life;
+        GameManager.GetGameManager().m_GameUI.SetLifeBar(m_Life/8.0f);
+        GameManager.GetGameManager().m_GameUI.ShowUI();
+        if (m_Life == 0)
+        {
+            GameManager.GetGameManager().RestartGame();
+        }
     }
 }
