@@ -250,6 +250,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         m_CharacterController.enabled = true;
         int m_Life = 8;
         int m_Coins = 0;
+        GameManager.GetGameManager().m_GameUI.SetLifeBar(m_Life / 8.0f);
     }
 
     public void Step(AnimationEvent _AnimationEvent)
