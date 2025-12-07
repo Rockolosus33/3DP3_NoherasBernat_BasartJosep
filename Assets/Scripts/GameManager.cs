@@ -9,10 +9,11 @@ public class GameManager : MonoBehaviour
     public AudioClip m_Music;
     public GameUI m_GameUI;
     public PlayerController m_Player;
+    public AudioSource l_AudioSource;
 
     private void Start()
     {
-        AudioSource l_AudioSource = gameObject.AddComponent<AudioSource>();
+        l_AudioSource = gameObject.AddComponent<AudioSource>();
         l_AudioSource.clip = m_Music;
         l_AudioSource.loop = true;
         l_AudioSource.Play();

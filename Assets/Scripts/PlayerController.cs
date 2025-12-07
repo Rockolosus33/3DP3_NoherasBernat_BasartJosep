@@ -177,8 +177,32 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     }
     void Jump()
     {
+        if(m_JumpsPossible == 2)
+        {
+            m_Animator.Play("Jump");
+        }
+        if (m_JumpsPossible == 1)
+        {
+            m_Animator.Play("double_jump");
+        }
+        if (m_JumpsPossible == 0)
+        {
+            m_Animator.Play("triple_jump");
+        }
         m_VerticalSpeed = m_JumpSpeed;
         --m_JumpsPossible;
+    }
+    public void Jump1()
+    {
+        
+    }
+    public void Jump2()
+    {
+
+    }
+    public void Jump3()
+    {
+
     }
     bool CanPunch()
     {
@@ -310,6 +334,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
 
     bool CanAttachToElevator(Collider ElevatorCollider)
     {
+        m_ElevatorCollider = ElevatorCollider;
         return Vector3.Dot(m_ElevatorCollider.transform.up, Vector3.up) > Mathf.Cos(m_MaxAngleToAttachElevator * Mathf.Deg2Rad);
     }
 

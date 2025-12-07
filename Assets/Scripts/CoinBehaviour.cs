@@ -17,8 +17,9 @@ public class CoinBehaaviour : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             GameManager.GetGameManager().m_Player.AddCoin();
+            //m_AudioSource.Play();
+            GameManager.GetGameManager().l_AudioSource.PlayOneShot(m_Audio);
             gameObject.SetActive(false);
-            //m_AudioSource.PlayOneShot(m_Audio);
         }
     }
 }
