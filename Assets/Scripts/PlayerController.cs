@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     public float m_MaxAngleToKillGoomba = 30.0f;
     public KeyCode m_JumpKeyCode = KeyCode.Space;
     int m_JumpsPossible;
-    int m_MaxJumps = 2;
+    int m_MaxJumps = 1;
 
     [Header("Input")]
     public int m_PunchMouseButton = 0;
@@ -55,6 +55,8 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
 
     int m_Life = 8;
     int m_Coins = 0;
+    float m_JumpTimer;
+    int m_JumpID;
     private void Awake()
     {
         m_CharacterController = GetComponent<CharacterController>();
@@ -138,12 +140,16 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
         {
             m_VerticalSpeed = 0.0f;
             m_JumpsPossible = m_MaxJumps;
+            m_JumpTimer += Time.deltaTime;
         }
         else if ((l_CollisionFlags & CollisionFlags.CollidedAbove) != 0 && m_VerticalSpeed > 0.0f)
         {
             m_VerticalSpeed = 0.0f;
         }
-
+        else if ((l_CollisionFlags & CollisionFlags.CollidedSides) != 0 && m_VerticalSpeed != 0.0f)
+        {
+            m_JumpsPossible = m_MaxJumps;
+        }
         if (Input.GetKeyDown(KeyCode.C))
         {
             AddCoin();
@@ -153,6 +159,11 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
             Hit();
         }
         UpdatePunch();
+
+        if(m_JumpTimer > 0.3f)
+        {
+            m_JumpID = 0;
+        }
 
     }
 
@@ -169,7 +180,7 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     }
     bool CanJump()
     {
-        if (m_JumpsPossible >= 0)
+        if (m_JumpsPossible > 0)
         {
             return true;
         }
@@ -177,19 +188,33 @@ public class PlayerController : MonoBehaviour , IRestartGameElement
     }
     void Jump()
     {
-        if(m_JumpsPossible == 2)
+        float m_JumpBoost = 0;
+        if (m_JumpID == 0)
         {
             m_Animator.Play("Jump");
+            m_JumpID = 1;
+            m_JumpTimer = 0.0f;
         }
-        if (m_JumpsPossible == 1)
+        else if (m_JumpID == 1)
         {
             m_Animator.Play("double_jump");
+            m_JumpID = 2;
+            m_JumpTimer = 0.0f;
+            m_JumpBoost = 1.0f;
         }
-        if (m_JumpsPossible == 0)
+        else if (m_JumpID == 2)
         {
             m_Animator.Play("triple_jump");
+            m_JumpID = 0;
+            m_JumpTimer = 0.0f;
+            m_JumpBoost = 3.0f;
+
         }
-        m_VerticalSpeed = m_JumpSpeed;
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            m_JumpBoost = m_JumpBoost * 5f;
+        }
+        m_VerticalSpeed = m_JumpSpeed + m_JumpBoost;
         --m_JumpsPossible;
     }
     public void Jump1()
